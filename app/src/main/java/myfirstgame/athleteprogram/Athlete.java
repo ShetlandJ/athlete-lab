@@ -3,6 +3,10 @@ package myfirstgame.athleteprogram;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -67,7 +71,7 @@ public abstract class Athlete implements AthleteLog {
         this.runs.add(runLength);
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH);
         Date date = new Date();
-        String new_line = dateFormat.format(date) + ", " + runLength + ", " + totalRunDistance();
+        String new_line = dateFormat.format(date) + "\t" + runLength + "\t" + totalRunDistance();
 
         writeToFile(new_line);
     }
@@ -82,6 +86,19 @@ public abstract class Athlete implements AthleteLog {
 
     public void writeToFile(String line) throws IOException {
         String filename = name + "_athlete_log.txt";
+        Path path = Paths.get(filename);
+
+        try {
+            Files.createFile(path);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true));
+            writer.append("Date & Time\tRun Length\tTotal Distance");
+            writer.append('\n');
+            writer.append('\n');
+
+            writer.close();
+
+        } catch (FileAlreadyExistsException ignored) {
+        }
         BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true));
         writer.append(line);
         writer.append('\n');
